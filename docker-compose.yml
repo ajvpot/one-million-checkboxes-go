@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  master:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    command: ["-mode", "master", "-port", ":8080"]
+    volumes:
+      - ./checkboxes_state.gob:/checkboxes_state.gob
+
+  relayer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081"
+    command: ["-mode", "relayer", "-port", ":8081", "-masterServerURL", "ws://master:8080/ws"]
+    depends_on:
+      - master
+    deploy:
+      mode: replicated
+      replicas: 2
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: ["/client"]
+    command: ["-server", "ws://relayer:8081/ws"]
+    depends_on:
+      - master
+    deploy:
+      mode: replicated
+      replicas: 100
+
