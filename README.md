@@ -1,3 +1,5 @@
+excellent blog https://eieio.games/essays/scaling-one-million-checkboxes/
+
 - how would i do it
 -
 - go process - 1 million atomic.Bools
